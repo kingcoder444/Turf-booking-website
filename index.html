@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TurfBook - Book Your Game, Anytime</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/components.css">
+    <link rel="stylesheet" href="styles/pages.css">
+
+    <style>
+        .ai-chat-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 320px;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-radius: 12px;
+            overflow: hidden;
+            background-color: #ffffff;
+            border: 1px solid #e0e0e0;
+        }
+
+        /* Basic dark theme support */
+        body.dark-theme .ai-chat-container {
+            background-color: #2d3748;
+            border-color: #4a5568;
+        }
+
+        .ai-chat-response {
+            padding: 12px;
+            font-size: 0.9rem;
+            color: #333333;
+            background-color: #f7f7f7;
+            display: none; /* Hidden by default */
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        body.dark-theme .ai-chat-response {
+            color: #ffffff;
+            background-color: #1a202c;
+        }
+
+        .ai-chat-input-group {
+            display: flex;
+            align-items: center;
+        }
+
+        .ai-chat-input-group input {
+            flex-grow: 1;
+            border: none;
+            padding: 12px;
+            font-size: 0.9rem;
+            background: transparent;
+            color: #333333;
+        }
+        
+        body.dark-theme .ai-chat-input-group input {
+            color: #ffffff;
+        }
+
+        .ai-chat-input-group input:focus {
+            outline: none;
+        }
+
+        .ai-chat-input-group button {
+            background-color: #2C7A7B; /* Match your primary button color */
+            color: white;
+            border: none;
+            padding: 12px 16px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .ai-chat-input-group button:disabled {
+            background-color: #A0AEC0; /* A grey color for disabled state */
+            cursor: not-allowed;
+        }
+
+        .ai-chat-input-group button:hover:not(:disabled) {
+            background-color: #285E61; /* A darker shade for hover */
+        }
+    </style>
+    <style>
+  .hero-text-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.5rem;
+  }
+</style>
+</head>
+<body>
+    <div id="app">
+        <div id="loading-screen" class="loading-screen">
+            <div class="loading-spinner"></div>
+            <p>Loading TurfSurf...</p>
+        </div>
+
+        <nav class="navbar" id="navbar">
+            <div class="nav-container">
+                <div class="nav-brand">
+                    <h2>🏟️ TurfSurf</h2>
+                </div>
+                <div class="nav-menu" id="nav-menu">
+                    <a href="#" onclick="showPage('home')" class="nav-link">Home</a>
+                    <a href="#" onclick="showPage('browse')" class="nav-link">Browse Turfs</a>
+                    <a href="#" onclick="showPage('bookings')" class="nav-link user-only" style="display: none;">My Bookings</a>
+                    <a href="#" onclick="showPage('profile')" class="nav-link user-only" style="display: none;">Profile</a>
+                    <a href="#" onclick="showPage('admin')" class="nav-link admin-only" style="display: none;">Dashboard</a>
+                    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">🌙</button>
+                    <button class="btn btn-primary" id="auth-btn" onclick="showPage('auth')">Sign In</button>
+                    <button class="btn btn-secondary user-menu" id="user-menu" style="display: none;" onclick="logout()">Logout</button>
+                </div>
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </nav>
+
+        <main id="page-container">
+            <div id="home-page" class="page active">
+                <section class="hero">
+                    <div class="hero-content">
+                        <div class="hero-text-group">
+                            <h1 class="hero-title">Book Your Perfect Turf</h1>
+                            <p class="hero-subtitle" style="text-align: right;">Find and book premium sports turfs in your city. Play your game, <span style="white-space: nowrap;">anytime.</span></p>
+                            <div class="hero-actions">
+                                <button class="btn btn-primary btn-lg" onclick="showPage('browse')">Find Turfs</button>
+                                <button class="btn btn-secondary btn-lg" onclick="showPage('auth')">List Your Turf</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hero-image">
+                        <img src="https://images.pexels.com/photos/274422/pexels-photo-274422.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Football turf">
+                    </div>
+                </section>
+                <section class="features">
+                    <div class="container">
+                        <h2 class="section-title">Why Choose TurfSurf?</h2>
+
+                        <div class="features-grid">
+                            <div class="feature-card">
+                                <div class="feature-icon">📱</div>
+                                <h3>Easy Booking</h3>
+                                <p>Book your favorite turf in just 2 clicks. No more calling or waiting.</p>
+                            </div>
+                            <div class="feature-card">
+                                <div class="feature-icon">💳</div>
+                                <h3>Secure Payments</h3>
+                                <p>Safe and secure payment options with instant confirmation.</p>
+                            </div>
+                            <div class="feature-card">
+                                <div class="feature-icon">⭐</div>
+                                <h3>Verified Reviews</h3>
+                                <p>Read genuine reviews from players who have played there.</p>
+                            </div>
+                            <div class="feature-card">
+                                <div class="feature-icon">📍</div>
+                                <h3>Find Nearby</h3>
+                                <p>Discover turfs near your location with smart filtering.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <section class="offers">
+                    <div class="container">
+                        <h2 class="section-title">Special Offers</h2>
+                        <div class="offers-grid">
+                            <div class="offer-card">
+                                <div class="offer-badge">20% OFF</div>
+                                <h3>First Time Booking</h3>
+                                <p>Get 20% off on your first turf booking</p>
+                                <button class="btn btn-primary" onclick="showPage('browse')">Book Now</button>
+                            </div>
+                            <div class="offer-card">
+                                <div class="offer-badge">15% OFF</div>
+                                <h3>Weekend Special</h3>
+                                <p>Special discount for weekend bookings</p>
+                                <button class="btn btn-primary" onclick="showPage('browse')">Book Now</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <div id="auth-page" class="page">
+                <div class="auth-container">
+                    <div class="auth-card">
+                        <div class="auth-header">
+                            <h2 id="auth-title">Welcome to TurfSurf</h2>
+                            <p id="auth-subtitle">Sign in to book your game</p>
+                        </div>
+                        <div class="auth-tabs">
+                            <button class="tab-btn active" onclick="switchAuthTab('signin')">Sign In</button>
+                            <button class="tab-btn" onclick="switchAuthTab('signup')">Sign Up</button>
+                        </div>
+                        <form id="auth-form" class="auth-form">
+                            <div class="form-group" id="name-group" style="display: none;">
+                                <label for="name">Full Name</label>
+                                <input type="text" id="name" placeholder="Enter your full name">
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" id="email" placeholder="Enter your email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="password">Password</label>
+                                <input type="password" id="password" placeholder="Enter your password" required>
+                            </div>
+                            <div class="form-group" id="role-group" style="display: none;">
+                                <label>I want to:</label>
+                                <div class="role-selection">
+                                    <label class="role-option">
+                                        <input type="radio" name="role" value="user" checked>
+                                        <span class="role-content">
+                                            <strong>Book Turfs</strong>
+                                            <small>Find and book sports turfs</small>
+                                        </span>
+                                    </label>
+                                    <label class="role-option">
+                                        <input type="radio" name="role" value="admin">
+                                        <span class="role-content">
+                                            <strong>List My Turf</strong>
+                                            <small>Manage and rent out turfs</small>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-fullwidth" id="auth-submit">Sign In</button>
+                        </form>
+                        <div class="auth-footer">
+                            <p>Demo Credentials:</p>
+                            <small>User: user@demo.com | Admin: admin@demo.com | Password: demo123</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="browse-page" class="page">
+                <div class="container">
+                    <div class="page-header">
+                        <h1>Browse Turfs</h1>
+                        <p>Find the perfect turf for your game</p>
+                    </div>
+                    <div class="filters-container">
+                        <div class="filters">
+                            <select id="location-filter" onchange="applyFilters()">
+                                <option value="">All Locations</option>
+                                <option value="Mumbai">Mumbai</option>
+                                <option value="Pune">Pune</option>
+                                <option value="Bangalore">Bangalore</option>
+                                <option value="Delhi">Delhi</option>
+                            </select>
+                            <select id="sport-filter" onchange="applyFilters()">
+                                <option value="">All Sports</option>
+                                <option value="Football">Football</option>
+                                <option value="Cricket">Cricket</option>
+                                <option value="Tennis">Tennis</option>
+                                <option value="Badminton">Badminton</option>
+                            </select>
+                            <select id="price-filter" onchange="applyFilters()">
+                                <option value="">All Prices</option>
+                                <option value="0-500">Up to ₹500</option>
+                                <option value="500-1000">₹500 - ₹1000</option>
+                                <option value="1000-2000">₹1000 - ₹2000</option>
+                                <option value="2000+">₹2000+</option>
+                            </select>
+                            <select id="amenities-filter" onchange="applyFilters()">
+                                <option value="">All Amenities</option>
+                                <option value="Parking">Parking</option>
+                                <option value="Cafeteria">Cafeteria</option>
+                                <option value="Floodlights">Floodlights</option>
+                                <option value="Changing Room">Changing Room</option>
+                                <option value="Showers">Showers</option>
+                            </select>
+                            <button class="btn btn-secondary" onclick="clearFilters()">Clear Filters</button>
+                        </div>
+                    </div>
+                    <div id="turfs-grid" class="turfs-grid">
+                        </div>
+                </div>
+            </div>
+
+            <div id="profile-page" class="page">
+                <div class="container" style="max-width: 500px; margin: 2rem auto;">
+                    <div class="card" style="padding: 2rem; text-align: center; box-shadow: 0 4px 24px rgba(60,60,60,0.08); border-radius: 16px;">
+                        <img src="https://ui-avatars.com/api/?name=User&background=3B82F6&color=fff&size=128" alt="Profile Avatar" id="profile-avatar" style="width: 96px; height: 96px; border-radius: 50%; margin-bottom: 1rem;">
+                        <h2 id="profile-name" style="margin-bottom: 0.5rem;">User Name</h2>
+                        <p id="profile-email" style="color: var(--text-secondary); margin-bottom: 1.5rem;">user@email.com</p>
+                        <button class="btn btn-secondary" onclick="showPage('bookings')">My Bookings</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="booking-content" class="page"></div>
+
+            <div id="bookings-page" class="page">
+                <div class="container">
+                    <div class="page-header">
+                        <h1>My Bookings</h1>
+                        <p>View and manage your turf bookings</p>
+                    </div>
+                    <div class="booking-tabs" style="display: flex; justify-content: center; gap: 1rem; margin-bottom: 2rem;">
+                        <button class="tab-btn active" onclick="switchBookingTab('upcoming')">Upcoming</button>
+                        <button class="tab-btn" onclick="switchBookingTab('past')">Past</button>
+                    </div>
+                    <div id="bookings-list"></div>
+                </div>
+            </div>
+             </main>
+    </div> <div class="ai-chat-container">
+        <div class="ai-chat-response" id="ai-response"></div>
+        <div class="ai-chat-input-group">
+            <input type="text" id="prompt-input" placeholder="Ask the AI something...">
+            <button id="get-answer-btn" aria-label="Get Answer">➢</button>
+        </div>
+    </div>
+
+    <script src="js/data.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/booking.js"></script>
+    <script src="js/admin.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            const getAnswerButton = document.getElementById('get-answer-btn');
+            const promptInput = document.getElementById('prompt-input');
+            const responseDiv = document.getElementById('ai-response');
+
+            getAnswerButton.addEventListener('click', getAIResponse);
+
+            promptInput.addEventListener('keypress', (event) => {
+                if (event.key === 'Enter') {
+                    event.preventDefault(); 
+                    getAnswerButton.click();
+                }
+            });
+
+            async function getAIResponse() {
+                const userPrompt = promptInput.value.trim();
+                if (!userPrompt) return;
+
+                responseDiv.innerText = 'Thinking...';
+                responseDiv.style.display = 'block'; 
+                getAnswerButton.disabled = true;
+
+                try {
+                    const response = await fetch('http://127.0.0.1:5000/generate-text', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ prompt: userPrompt }),
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(data.error || 'An unknown error occurred.');
+                    }
+                    
+                    responseDiv.innerText = data.text;
+                    promptInput.value = '';
+
+                } catch (error) {
+                    console.error('Error fetching AI response:', error);
+                    responseDiv.innerText = `Error: ${error.message}`;
+                } finally {
+                    getAnswerButton.disabled = false;
+                }
+            }
+        });
+    </script>
+    
+    <script src="js/main.js"></script>
+</body>
+</html>
